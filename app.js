@@ -4,40 +4,45 @@ const ballRadius = 10;
 const paddleHeight = 10;
 const paddleWidth = 70;
 
-let x = canvas.width / 2;
-let y = canvas.height - 30;
+let ballX = canvas.width / 2;
+let ballY = canvas.height - 20;
 let dx = 2;
 let dy = -2;
 let paddleX = (canvas.width - paddleWidth) / 2;
+let paddleY = canvas.height - paddleHeight;
 let rightPressed = false;
 let leftPressed = false;
 let interval = 0;
 
 function drawBall() {
     ctx.beginPath();
-    ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+    ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
     ctx.fillStyle = "#202020";
     ctx.fill();
     ctx.closePath();
 
     // Collision with walls
-    if (x + dx < ballRadius || x + dx > canvas.width - ballRadius) {
+    if (ballX + dx < ballRadius || ballX + dx > canvas.width - ballRadius) {
         dx = -dx;
     }
 
-    if (y + dy < ballRadius) {
+    if (ballY + dy < ballRadius) {
         dy = -dy;
-    } else if (y + dy > canvas.height - ballRadius) {
-        console.log("GAME OVER");
-        document.location.reload();
-        clearInterval(interval);
+    } else if (ballY + dy > canvas.height - ballRadius) {
+        // Collision with paddle
+        if (ballX > paddleX && ballX < paddleX + paddleWidth) {
+            dy = -dy;
+        } else { // Game restarts
+            console.log("GAME OVER");
+            document.location.reload();
+            clearInterval(interval);
+        }
     }
-
 }
 
 function drawPaddle() {
     ctx.beginPath();
-    ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+    ctx.rect(paddleX, paddleY, paddleWidth, paddleHeight);
     ctx.fillStyle = "blue";
     ctx.fill();
     ctx.closePath();
@@ -47,7 +52,8 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBall();
     drawPaddle();
-    console.log("Ball x", x, "Ball y", y);
+    console.log("ball x =", ballX, "ball y =", ballY);
+    console.log("paddle x =", paddleX, "paddle y =", paddleY);
 
     // My solution
     // if (rightPressed && paddleX < canvas.width - paddleWidth) {
@@ -64,8 +70,8 @@ function draw() {
         paddleX = Math.max(paddleX - 5, 0);
     }
 
-    x += dx;
-    y += dy;
+    ballX += dx;
+    ballY += dy;
 }
 
 document.addEventListener("keydown", keyDownHandler, false);
