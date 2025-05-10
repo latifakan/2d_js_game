@@ -2,7 +2,7 @@ const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 const ballRadius = 10;
 const paddleHeight = 10;
-const paddleWidth = 10;
+const paddleWidth = 70;
 
 let x = canvas.width / 2;
 let y = canvas.height - 30;
@@ -11,6 +11,7 @@ let dy = -2;
 let paddleX = (canvas.width - paddleWidth) / 2;
 let rightPressed = false;
 let leftPressed = false;
+let interval = 0;
 
 function drawBall() {
     ctx.beginPath();
@@ -19,13 +20,19 @@ function drawBall() {
     ctx.fill();
     ctx.closePath();
 
-    // Colision
-    if (y + dy < ballRadius || y + dy > canvas.height - ballRadius) {
-        dy = -dy;
-    } 
+    // Collision with walls
     if (x + dx < ballRadius || x + dx > canvas.width - ballRadius) {
         dx = -dx;
     }
+
+    if (y + dy < ballRadius) {
+        dy = -dy;
+    } else if (y + dy > canvas.height - ballRadius) {
+        console.log("GAME OVER");
+        document.location.reload();
+        clearInterval(interval);
+    }
+
 }
 
 function drawPaddle() {
@@ -38,15 +45,25 @@ function drawPaddle() {
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawPaddle();
     drawBall();
-    if (rightPressed && paddleX < canvas.width - paddleWidth) {
-        paddleX += 5;
-        console.log("Postion Paddle: ", paddleX)
-    } else if (leftPressed && paddleX > 0) {
-        paddleX -= 5;
-        console.log("Postion Paddle: ", paddleX)
+    drawPaddle();
+    console.log("Ball x", x, "Ball y", y);
+
+    // My solution
+    // if (rightPressed && paddleX < canvas.width - paddleWidth) {
+    //     paddleX += 5;
+    //     console.log("Postion Paddle: ", paddleX)
+    // } else if (leftPressed && paddleX > 0) {
+    //     paddleX -= 5;
+    //     console.log("Postion Paddle: ", paddleX)
+    // }
+
+    if (rightPressed) {
+        paddleX = Math.min(paddleX + 5, canvas.width - paddleWidth);
+    } else if (leftPressed) {
+        paddleX = Math.max(paddleX - 5, 0);
     }
+
     x += dx;
     y += dy;
 }
@@ -76,4 +93,4 @@ function keyUpHandler(e) {
     }
 }
 
-setInterval(draw, 10);
+interval = setInterval(draw, 10);
