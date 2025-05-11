@@ -3,10 +3,17 @@ const ctx = canvas.getContext("2d");
 const ballRadius = 10;
 const paddleHeight = 10;
 const paddleWidth = 70;
+const brickRowCount = 3;
+const brickColumnCount = 5;
+const brickWidth = 75;
+const brickHeight = 20;
+const brickPadding = 10;
+const brickOffsetTop = 30;
+const brickOffsetLeft = 30;
 
 let ballX = canvas.width / 2;
 let ballY = canvas.height - 20;
-let dx = 2;
+let dx = 0;
 let dy = -2;
 let paddleX = (canvas.width - paddleWidth) / 2;
 let paddleY = canvas.height - paddleHeight;
@@ -14,10 +21,35 @@ let rightPressed = false;
 let leftPressed = false;
 let interval = 0;
 
+const bricks = [];
+for (let column = 0; column < brickColumnCount; column++) {
+    bricks[column] = [];
+    for (let row = 0; row < brickRowCount; row++) {
+        bricks[column][row] = {x: 0, y: 0};
+    }
+}
+
+function drawBricks() {
+    for (let column = 0; column < brickColumnCount; column++) {
+        for (let row = 0; row < brickRowCount; row++) {
+            const brickX = column * (brickWidth + brickPadding) + brickOffsetLeft;
+            const brickY = row * (brickHeight + brickPadding) + brickOffsetTop;
+            bricks[column][row].x = brickX;
+            bricks[column][row].y = brickY;
+
+            ctx.beginPath();    
+            ctx.rect(brickX, brickY, brickWidth, brickHeight);
+            ctx.fillStyle = "#494949";
+            ctx.fill();
+            ctx.closePath();
+        }
+    }
+}
+
 function drawBall() {
     ctx.beginPath();
     ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
-    ctx.fillStyle = "#202020";
+    ctx.fillStyle = "black";
     ctx.fill();
     ctx.closePath();
 
@@ -31,6 +63,7 @@ function drawBall() {
     } else if (ballY + dy > canvas.height - ballRadius) {
         // Collision with paddle
         if (ballX > paddleX && ballX < paddleX + paddleWidth) {
+            console.log("paddle hit ball");
             dy = -dy;
         } else { // Game restarts
             console.log("GAME OVER");
@@ -50,10 +83,12 @@ function drawPaddle() {
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBricks();
     drawBall();
     drawPaddle();
-    console.log("ball x =", ballX, "ball y =", ballY);
-    console.log("paddle x =", paddleX, "paddle y =", paddleY);
+    // console.log("ball x =", ballX, "ball y =", ballY);
+    // console.log("paddle x =", paddleX);
+    // console.log("bricks =", bricks);
 
     // My solution
     // if (rightPressed && paddleX < canvas.width - paddleWidth) {
