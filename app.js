@@ -13,7 +13,7 @@ const brickOffsetLeft = 30;
 
 let ballX = canvas.width / 2;
 let ballY = canvas.height - 20;
-let dx = 0;
+let dx = 2;
 let dy = -2;
 let paddleX = (canvas.width - paddleWidth) / 2;
 let paddleY = canvas.height - paddleHeight;
@@ -25,23 +25,25 @@ const bricks = [];
 for (let column = 0; column < brickColumnCount; column++) {
     bricks[column] = [];
     for (let row = 0; row < brickRowCount; row++) {
-        bricks[column][row] = {x: 0, y: 0};
+        bricks[column][row] = {x: 0, y: 0, status: 1};
     }
 }
 
 function drawBricks() {
     for (let column = 0; column < brickColumnCount; column++) {
         for (let row = 0; row < brickRowCount; row++) {
-            const brickX = column * (brickWidth + brickPadding) + brickOffsetLeft;
-            const brickY = row * (brickHeight + brickPadding) + brickOffsetTop;
-            bricks[column][row].x = brickX;
-            bricks[column][row].y = brickY;
+            if (bricks[column][row].status === 1) {
+                const brickX = column * (brickWidth + brickPadding) + brickOffsetLeft;
+                const brickY = row * (brickHeight + brickPadding) + brickOffsetTop;
+                bricks[column][row].x = brickX;
+                bricks[column][row].y = brickY;
 
-            ctx.beginPath();    
-            ctx.rect(brickX, brickY, brickWidth, brickHeight);
-            ctx.fillStyle = "#494949";
-            ctx.fill();
-            ctx.closePath();
+                ctx.beginPath();    
+                ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                ctx.fillStyle = "#494949";
+                ctx.closePath();
+                ctx.fill();
+            }
         }
     }
 }
@@ -63,7 +65,6 @@ function drawBall() {
     } else if (ballY + dy > canvas.height - ballRadius) {
         // Collision with paddle
         if (ballX > paddleX && ballX < paddleX + paddleWidth) {
-            console.log("paddle hit ball");
             dy = -dy;
         } else { // Game restarts
             console.log("GAME OVER");
@@ -86,23 +87,17 @@ function draw() {
     drawBricks();
     drawBall();
     drawPaddle();
+    collisionDetection();
     // console.log("ball x =", ballX, "ball y =", ballY);
     // console.log("paddle x =", paddleX);
     // console.log("bricks =", bricks);
 
-    // My solution
-    // if (rightPressed && paddleX < canvas.width - paddleWidth) {
-    //     paddleX += 5;
-    //     console.log("Postion Paddle: ", paddleX)
-    // } else if (leftPressed && paddleX > 0) {
-    //     paddleX -= 5;
-    //     console.log("Postion Paddle: ", paddleX)
-    // }
-
-    if (rightPressed) {
-        paddleX = Math.min(paddleX + 5, canvas.width - paddleWidth);
-    } else if (leftPressed) {
-        paddleX = Math.max(paddleX - 5, 0);
+    if (rightPressed && paddleX < canvas.width - paddleWidth) {
+        paddleX += 5;
+        console.log("paddle x: ", paddleX)
+    } else if (leftPressed && paddleX > 0) {
+        paddleX -= 5;
+        console.log("paddle x: ", paddleX)
     }
 
     ballX += dx;
@@ -131,6 +126,24 @@ function keyUpHandler(e) {
     } else if (e.key === "Left" || e.key === "ArrowLeft") {
         leftPressed = false;
         console.log("Left released")
+    }
+}
+
+function collisionDetection() {
+    for (let column = 0; column < brickColumnCount; column++) {
+        for (let row = 0; row < brickRowCount; row++) {
+            const brick = bricks[column][row];
+
+            if (brick.status === 1) {
+                if (ballX > brick.x && 
+                    ballX < brick.x + brickWidth &&
+                    ballY > brick.y &&
+                    ballY < brick.y + brickHeight) {
+                        brick.status = 0;
+                        dy = -dy;
+                    }
+            }
+        }
     }
 }
 
