@@ -22,6 +22,7 @@ let leftPressed = false;
 let interval = 0;
 let playerScore = 0;
 
+
 const bricks = [];
 for (let column = 0; column < brickColumnCount; column++) {
     bricks[column] = [];
@@ -144,6 +145,11 @@ function collisionDetection() {
                         brick.status = 0;
                         dy = -dy;
                         playerScore++;
+                        if (playerScore === brickRowCount * brickColumnCount) {
+                            alert(`- YOU WIN! - Score is: ${playerScore}`);
+                            document.location.reload;
+                            clearInterval(interval);
+                        }
                     }
             }
         }
