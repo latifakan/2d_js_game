@@ -20,6 +20,7 @@ let paddleY = canvas.height - paddleHeight;
 let rightPressed = false;
 let leftPressed = false;
 let interval = 0;
+let playerScore = 0;
 
 const bricks = [];
 for (let column = 0; column < brickColumnCount; column++) {
@@ -77,7 +78,7 @@ function drawBall() {
 function drawPaddle() {
     ctx.beginPath();
     ctx.rect(paddleX, paddleY, paddleWidth, paddleHeight);
-    ctx.fillStyle = "blue";
+    ctx.fillStyle = "#0095DD";
     ctx.fill();
     ctx.closePath();
 }
@@ -88,6 +89,7 @@ function draw() {
     drawBall();
     drawPaddle();
     collisionDetection();
+    drawScore();
     // console.log("ball x =", ballX, "ball y =", ballY);
     // console.log("paddle x =", paddleX);
     // console.log("bricks =", bricks);
@@ -141,10 +143,17 @@ function collisionDetection() {
                     ballY < brick.y + brickHeight) {
                         brick.status = 0;
                         dy = -dy;
+                        playerScore++;
                     }
             }
         }
     }
+}
+
+function drawScore() {
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "#0095DD";
+    ctx.fillText(`Score: ${playerScore}`, 3, 15);
 }
 
 interval = setInterval(draw, 10);
