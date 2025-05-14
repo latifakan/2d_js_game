@@ -19,7 +19,6 @@ let paddleX = (canvas.width - paddleWidth) / 2;
 let paddleY = canvas.height - paddleHeight;
 let rightPressed = false;
 let leftPressed = false;
-let interval = 0;
 let playerScore = 0;
 let playerLife = 3;
 
@@ -57,31 +56,6 @@ function drawBall() {
     ctx.fillStyle = "black";
     ctx.fill();
     ctx.closePath();
-
-    // Collision with walls
-    if (ballX + dx < ballRadius || ballX + dx > canvas.width - ballRadius) {
-        dx = -dx;
-    }
-
-    if (ballY + dy < ballRadius) {
-        dy = -dy;
-    } else if (ballY + dy > canvas.height - ballRadius) {
-        // Collision with paddle
-        if (ballX > paddleX && ballX < paddleX + paddleWidth) {
-            dy = -dy;
-        }
-        playerLife--;
-        if(!playerLife) { // Game restarts
-            alert("GAME OVER");
-            document.location.reload();
-        } else {
-            ballX = canvas.width / 2;
-            ballY = canvas.height - 30;
-            dx = 2;
-            dy = -2;
-            paddleX = (canvas.width - paddleWidth) / 2;
-        }
-    }
 }
 
 function drawPaddle() {
@@ -111,6 +85,32 @@ function draw() {
         paddleX -= 5;
         console.log("paddle x: ", paddleX)
     }
+
+        // Collision with walls
+    if (ballX + dx < ballRadius || ballX + dx > canvas.width - ballRadius) {
+        dx = -dx;
+    }
+    if (ballY + dy < ballRadius) {
+        dy = -dy;
+    } else if (ballY + dy > canvas.height - ballRadius) {
+        // Collision with paddle
+        if (ballX > paddleX && ballX < paddleX + paddleWidth) {
+            dy = -dy;
+        } else {
+            playerLife--;
+            if(!playerLife) { // Game restarts
+            alert("GAME OVER");
+            document.location.reload();
+            } else {
+            ballX = canvas.width / 2;
+            ballY = canvas.height - 30;
+            dx = 2;
+            dy = -2;
+            paddleX = (canvas.width - paddleWidth) / 2;
+            }
+        }
+    }
+
 
     ballX += dx;
     ballY += dy;
