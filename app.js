@@ -21,6 +21,7 @@ let rightPressed = false;
 let leftPressed = false;
 let interval = 0;
 let playerScore = 0;
+let playerLife = 3;
 
 
 const bricks = [];
@@ -68,10 +69,17 @@ function drawBall() {
         // Collision with paddle
         if (ballX > paddleX && ballX < paddleX + paddleWidth) {
             dy = -dy;
-        } else { // Game restarts
-            console.log("GAME OVER");
+        }
+        playerLife--;
+        if(!playerLife) { // Game restarts
+            alert("GAME OVER");
             document.location.reload();
-            clearInterval(interval);
+        } else {
+            ballX = canvas.width / 2;
+            ballY = canvas.height - 30;
+            dx = 2;
+            dy = -2;
+            paddleX = (canvas.width - paddleWidth) / 2;
         }
     }
 }
@@ -91,6 +99,7 @@ function draw() {
     drawPaddle();
     collisionDetection();
     drawScore();
+    drawLife();
     // console.log("ball x =", ballX, "ball y =", ballY);
     // console.log("paddle x =", paddleX);
     // console.log("bricks =", bricks);
@@ -105,6 +114,8 @@ function draw() {
 
     ballX += dx;
     ballY += dy;
+
+    requestAnimationFrame(draw);
 }
 
 document.addEventListener("keydown", keyDownHandler, false);
@@ -157,7 +168,6 @@ function collisionDetection() {
                         if (playerScore === brickRowCount * brickColumnCount) {
                             alert(`- YOU WIN! - Score is: ${playerScore}`);
                             document.location.reload;
-                            clearInterval(interval);
                         }
                     }
             }
@@ -171,4 +181,10 @@ function drawScore() {
     ctx.fillText(`Score: ${playerScore}`, 3, 15);
 }
 
-interval = setInterval(draw, 10);
+function drawLife() {
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "#0095DD";
+    ctx.fillText(`Your Lives: ${playerLife}`, canvas.width - 95, 15);
+}
+
+draw();
