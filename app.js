@@ -109,6 +109,7 @@ function draw() {
 
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
+document.addEventListener("mousemove", mouseMoveHandler, false);
 
 // Arrow... is used for almost every browser, Explorer isn't using Arrow
 // key holds information about the key pressed
@@ -129,6 +130,14 @@ function keyUpHandler(e) {
     } else if (e.key === "Left" || e.key === "ArrowLeft") {
         leftPressed = false;
         console.log("Left released")
+    }
+}
+
+function mouseMoveHandler(e) {
+    const relativeX = e.clientX - canvas.offsetLeft;
+    if (relativeX > 0 + (paddleWidth / 2) && 
+        relativeX < canvas.width - (paddleWidth / 2)) {
+        paddleX = relativeX - paddleWidth / 2;
     }
 }
 
